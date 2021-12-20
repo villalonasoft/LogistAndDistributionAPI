@@ -73,6 +73,11 @@ namespace LogistAndDistribution.Controllers
                             .ThenInclude(x => x.Unit)
                 .Include(x => x.OrderDetails)
                     .ThenInclude(x => x.Stock)
+                        .ThenInclude(x => x.Presentation)
+                            .ThenInclude(x => x.Presentation)
+                                .ThenInclude(x => x.Product)
+                .Include(x => x.OrderDetails)
+                    .ThenInclude(x => x.Stock)
                         .ThenInclude(x => x.Zone)
                 .FirstOrDefaultAsync(x => x.Id == id && x.CompanyId == 1);
 
@@ -187,8 +192,8 @@ namespace LogistAndDistribution.Controllers
                 Id = id,
                 Mount = 20000,
                 OrderTypeId = 1,
-                PersonId = 3,
-                PersonTypeId = 3,
+                PersonId = 1,
+                PersonTypeId = 1,
                 CustomerId = 1,
                 Priority = 5,
                 Reference = "Entrega miercoles",
