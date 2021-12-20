@@ -11,9 +11,9 @@ namespace LogistAndDitribution.Core.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<OrderZoneUser> builder)
         {
-            builder.HasKey(x => new { x.OrderHeaderId, x.ZoneId, x.CompanyId });
-            builder.HasOne(x => x.Zone).WithOne().OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.User).WithOne().OnDelete(DeleteBehavior.NoAction);
+            builder.HasKey(x => new { x.ZoneId,x.OrderHeaderId,x.CompanyId });
+            builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.User).WithMany().OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

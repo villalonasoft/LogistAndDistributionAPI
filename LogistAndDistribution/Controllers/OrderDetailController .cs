@@ -31,6 +31,10 @@ namespace LogistAndDistribution.Controllers
                         .ThenInclude(x => x.Presentation)
                             .ThenInclude(x => x.Unit)
                     .Include(x => x.Stock)
+                        .ThenInclude(x => x.Presentation)
+                            .ThenInclude(x => x.Presentation)
+                                .ThenInclude(x => x.Product)
+                    .Include(x => x.Stock)
                         .ThenInclude(x => x.Zone)
                 .Where(x => x.OrderHeaderId == id && x.CompanyId == 1)
                 .ToListAsync();
@@ -42,6 +46,7 @@ namespace LogistAndDistribution.Controllers
             {
                 detail.Add(new OrderDetailSimpleVIewDto
                 {
+                    Name = items.Stock.Presentation.Presentation.Product.Name + " " + items.Stock.Presentation.Presentation.Name,
                     Stock = items.Stock.Cant,
                     CuantityOrder = items.CuantityOrder,
                     CuantityPicked = items.CuantityPicked,

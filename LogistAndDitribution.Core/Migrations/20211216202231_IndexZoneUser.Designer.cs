@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogistAndDitribution.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211216085212_NUllableUser")]
-    partial class NUllableUser
+    [Migration("20211216202231_IndexZoneUser")]
+    partial class IndexZoneUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,9 +70,6 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<int>("ZoneId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderHeaderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
 
@@ -80,6 +77,9 @@ namespace LogistAndDitribution.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderHeaderId")
                         .HasColumnType("int");
 
                     b.Property<int>("CompanyId")
@@ -91,12 +91,11 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<int>("CuantityPicked")
                         .HasColumnType("int");
 
-                    b.HasKey("ZoneId", "OrderHeaderId", "UnitId", "PresentationId", "ProductId", "CompanyId");
+                    b.HasKey("ZoneId", "UnitId", "PresentationId", "ProductId", "OrderHeaderId", "CompanyId");
 
                     b.HasIndex("OrderHeaderId", "CompanyId");
 
-                    b.HasIndex("ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId")
-                        .IsUnique();
+                    b.HasIndex("ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId");
 
                     b.ToTable("OrderDetail");
                 });
@@ -166,10 +165,10 @@ namespace LogistAndDitribution.Core.Migrations
 
             modelBuilder.Entity("LogistAndDistribution.Models.Domain.OrderZoneUser", b =>
                 {
-                    b.Property<int>("OrderHeaderId")
+                    b.Property<int>("ZoneId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ZoneId")
+                    b.Property<int>("OrderHeaderId")
                         .HasColumnType("int");
 
                     b.Property<int>("CompanyId")
@@ -181,16 +180,13 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderHeaderId", "ZoneId", "CompanyId");
+                    b.HasKey("ZoneId", "OrderHeaderId", "CompanyId");
 
                     b.HasIndex("OrderHeaderId", "CompanyId");
 
-                    b.HasIndex("UserId", "CompanyId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId", "CompanyId");
 
-                    b.HasIndex("ZoneId", "CompanyId")
-                        .IsUnique();
+                    b.HasIndex("ZoneId", "CompanyId");
 
                     b.ToTable("OrderZoneUsers");
                 });
@@ -417,8 +413,8 @@ namespace LogistAndDitribution.Core.Migrations
                         .IsRequired();
 
                     b.HasOne("LogistAndDistribution.Models.Domain.Stock", "Stock")
-                        .WithOne()
-                        .HasForeignKey("LogistAndDistribution.Models.Domain.OrderDetail", "ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId")
+                        .WithMany()
+                        .HasForeignKey("ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -447,13 +443,13 @@ namespace LogistAndDitribution.Core.Migrations
                         .IsRequired();
 
                     b.HasOne("LogistAndDistribution.Models.Domain.User", "User")
-                        .WithOne()
-                        .HasForeignKey("LogistAndDistribution.Models.Domain.OrderZoneUser", "UserId", "CompanyId")
+                        .WithMany()
+                        .HasForeignKey("UserId", "CompanyId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("LogistAndDistribution.Models.Domain.Zone", "Zone")
-                        .WithOne()
-                        .HasForeignKey("LogistAndDistribution.Models.Domain.OrderZoneUser", "ZoneId", "CompanyId")
+                        .WithMany()
+                        .HasForeignKey("ZoneId", "CompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

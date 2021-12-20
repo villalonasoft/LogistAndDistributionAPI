@@ -51,6 +51,12 @@
     <Compile Remove="Migrations\20211216084409_NUllableUser.Designer.cs" />
     <Compile Remove="Migrations\20211216085044_NUllableUser.cs" />
     <Compile Remove="Migrations\20211216085044_NUllableUser.Designer.cs" />
+    <Compile Remove="Migrations\20211216085212_NUllableUser.cs" />
+    <Compile Remove="Migrations\20211216085212_NUllableUser.Designer.cs" />
+    <Compile Remove="Migrations\20211216195602_NUllableUser2.cs" />
+    <Compile Remove="Migrations\20211216195602_NUllableUser2.Designer.cs" />
+    <Compile Remove="Migrations\20211216201048_NUllableUser.cs" />
+    <Compile Remove="Migrations\20211216201048_NUllableUser.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

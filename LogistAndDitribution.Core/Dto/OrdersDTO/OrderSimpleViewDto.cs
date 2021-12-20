@@ -8,10 +8,10 @@ namespace LogistAndDitribution.Core.Dto.OrdersDTO
     {
         public int Id { get; set; }
         public string Customer { get; set; }
-        public int OrderTypeId { get; set; }
-        public DateTime Date { get; set; }
-        public DateTime? InitDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public string OrderType { get; set; }
+        public string Date { get; set; }
+        public string? InitDate { get; set; }
+        public string? EndDate { get; set; }
         public int Priority { get; set; }
         public decimal Mount { get; set; }
         public string Reference { get; set; }

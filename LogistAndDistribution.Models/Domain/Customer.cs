@@ -22,6 +22,8 @@ namespace LogistAndDistribution.Models.Domain
         [ForeignKey("CompanyId")]
         public Company Company { get; set; }
 
+        public int Id { get; set; }
+
         public string LargeName { get; set; }
 
 

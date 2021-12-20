@@ -8,11 +8,12 @@ namespace LogistAndDistribution.Models.Domain
 {
     public class OrderHeader
     {
+        public int CustomerId { get; set; }
         public int PersonTypeId { get; set; }
         public int PersonId { get; set; }
         public int CompanyId { get; set; }
 
-        [ForeignKey("PersonTypeId,PersonId,CompanyId")]
+        [ForeignKey("CustomerId,PersonTypeId,PersonId,CompanyId")]
         public Customer Customer { get; set; }
         public int Id { get; set; }
 

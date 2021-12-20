@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LogistAndDistribution.Models.Domain;
@@ -24,9 +23,43 @@ namespace LogistAndDistribution.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetail()
+        public async Task<ActionResult<IEnumerable<OrderSimpleViewDto>>> GetOrderDetail()
         {
-            return await _context.OrderDetail.ToListAsync();
+            var orderDetail = await _context.OrderHeaders
+                .Include(x=>x.OrderType)
+                .Include(x => x.Customer)
+                    .ThenInclude(x=>x.Person)
+                .Where(x => x.CompanyId == 1)
+                .ToListAsync();
+
+            var detail = new List<OrderDetailSimpleVIewDto>();
+
+
+            var order = new List<OrderSimpleViewDto>();
+            foreach (var items in orderDetail)
+            {
+
+                order.Add(new OrderSimpleViewDto()
+                {
+                    Customer = items.Customer.Person.Name+" - "+items.Customer.LargeName,
+                    Status = items.Status,
+                    Date = items.Date.ToString("dd/MM/yyyy HH:mm"),
+                    EndDate = items.EndDate?.ToString("dd/MM/yyyy HH:mm"),
+                    Id = items.Id,
+                    InitDate = items.InitDate?.ToString("dd/MM/yyyy HH:mm"),
+                    Mount = items.Mount,
+                    OrderType = items.OrderType.Description,
+                    Priority = items.Priority,
+                    Reference = items.Reference
+                });
+            }
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return order;
         }
 
 
@@ -40,20 +73,21 @@ namespace LogistAndDistribution.Controllers
                             .ThenInclude(x => x.Unit)
                 .Include(x => x.OrderDetails)
                     .ThenInclude(x => x.Stock)
-                        .ThenInclude(x=>x.Zone)
-                .FirstOrDefaultAsync(x=>x.Id == id && x.CompanyId==1);
+                        .ThenInclude(x => x.Zone)
+                .FirstOrDefaultAsync(x => x.Id == id && x.CompanyId == 1);
 
             var detail = new List<OrderDetailSimpleVIewDto>();
 
 
-            foreach(var items in orderDetail.OrderDetails)
+            foreach (var items in orderDetail.OrderDetails)
             {
-                detail.Add(new OrderDetailSimpleVIewDto 
+                detail.Add(new OrderDetailSimpleVIewDto
                 {
                     Stock = items.Stock.Cant,
                     CuantityOrder = items.CuantityOrder,
                     CuantityPicked = items.CuantityPicked,
                     PresentationId = items.PresentationId,
+                    Name = items.Stock.Presentation.Presentation.Product.Name +" "+ items.Stock.Presentation.Presentation.Name,
                     ProductId = items.ProductId,
                     Unit = items.Stock.Presentation.Unit.Name,
                     Zone = items.Stock.Zone.Description
@@ -61,15 +95,15 @@ namespace LogistAndDistribution.Controllers
                 });
             }
 
-            var order = new OrderSimpleViewDto() 
+            var order = new OrderSimpleViewDto()
             {
                 Customer = orderDetail.Customer.LargeName,
                 Status = orderDetail.Status,
-                Date = orderDetail.Date,
-                EndDate = orderDetail.EndDate,
+                Date = orderDetail.Date.ToString("dd/MM/yyyy HH:mm"),
+                EndDate = orderDetail.EndDate?.ToString("dd/MM/yyyy HH:mm"),
                 Id = orderDetail.Id,
-                InitDate = orderDetail.InitDate,
-                Mount= orderDetail.Mount,
+                InitDate = orderDetail.InitDate?.ToString("dd/MM/yyyy HH:mm"),
+                Mount = orderDetail.Mount,
                 Priority = orderDetail.Priority,
                 Reference = orderDetail.Reference,
                 OrderDetails = detail
@@ -100,7 +134,7 @@ namespace LogistAndDistribution.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrderHeaderExists(id,1))
+                if (!OrderHeaderExists(id, 1))
                 {
                     return NotFound();
                 }
@@ -118,26 +152,28 @@ namespace LogistAndDistribution.Controllers
         public async Task<ActionResult<OrderDetail>> PostOrderDetail(List<OrderPostDto> orderDetail)
         {
             var detail = new List<OrderDetail>();
+            var lastorder = await _context.OrderHeaders.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            var id = lastorder == null ? 1 : lastorder.Id + 1;
 
-            foreach(var items in orderDetail)
+            foreach (var items in orderDetail)
             {
                 var stock = await _context.Stocks.AsNoTracking()
                     .Where(x => x.CompanyId == 1 &&
                         x.PresentationId == items.PresentationId &&
                         x.ProductId == items.ProductId &&
                         x.UnitId == items.UnitId)
-                    .Where(x=>x.Cant>0).FirstOrDefaultAsync();
+                    .Where(x => x.Cant > 0).FirstOrDefaultAsync();
 
                 if (stock != null)
                 {
-                    detail.Add(new OrderDetail 
+                    detail.Add(new OrderDetail
                     {
                         CompanyId = 1,
                         CuantityOrder = items.CuantityOrder,
-                        OrderHeaderId =1,
+                        OrderHeaderId = id,
                         PresentationId = items.PresentationId,
                         ProductId = items.ProductId,
-                        UnitId= items.UnitId,
+                        UnitId = items.UnitId,
                         ZoneId = stock.ZoneId
                     });
                 }
@@ -148,13 +184,14 @@ namespace LogistAndDistribution.Controllers
                 CompanyId = 1,
                 Date = DateTime.Now,
                 Status = 100,
-                Id = 1,
+                Id = id,
                 Mount = 20000,
                 OrderTypeId = 1,
-                PersonId = 1,
-                PersonTypeId = 1,
+                PersonId = 3,
+                PersonTypeId = 3,
+                CustomerId = 1,
                 Priority = 5,
-                Reference = "Embalaje en una sola caja",
+                Reference = "Entrega miercoles",
                 OrderDetails = detail
             };
 
@@ -177,7 +214,7 @@ namespace LogistAndDistribution.Controllers
             }
             catch (DbUpdateException)
             {
-                if (OrderHeaderExists(1,1))
+                if (OrderHeaderExists(1, 1))
                 {
                     return Conflict();
                 }
@@ -206,9 +243,9 @@ namespace LogistAndDistribution.Controllers
             return orderDetail;
         }
 
-        private bool OrderHeaderExists(int companyId,int id)
+        private bool OrderHeaderExists(int companyId, int id)
         {
-            return _context.OrderHeaders.Any(e => e.CompanyId ==companyId && e.Id==id);
+            return _context.OrderHeaders.Any(e => e.CompanyId == companyId && e.Id == id);
         }
     }
 }

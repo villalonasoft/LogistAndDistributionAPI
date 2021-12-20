@@ -14,6 +14,14 @@ namespace LogistAndDitribution.Core.Migrations
                 name: "IX_OrderZoneUsers_UserId_CompanyId",
                 table: "OrderZoneUsers");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_OrderDetail",
+                table: "OrderDetail");
+
+            migrationBuilder.DropIndex(
+                name: "IX_OrderDetail_ZoneId_UnitId_PresentationId_ProductId_CompanyId",
+                table: "OrderDetail");
+
             migrationBuilder.AlterColumn<int>(
                 name: "UserId",
                 table: "OrderZoneUsers",
@@ -26,12 +34,22 @@ namespace LogistAndDitribution.Core.Migrations
                 table: "OrderZoneUsers",
                 columns: new[] { "OrderHeaderId", "ZoneId", "CompanyId" });
 
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_OrderDetail",
+                table: "OrderDetail",
+                columns: new[] { "ZoneId", "UnitId", "PresentationId", "ProductId", "OrderHeaderId", "CompanyId" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_OrderZoneUsers_UserId_CompanyId",
                 table: "OrderZoneUsers",
                 columns: new[] { "UserId", "CompanyId" },
                 unique: true,
                 filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetail_ZoneId_UnitId_PresentationId_ProductId_CompanyId",
+                table: "OrderDetail",
+                columns: new[] { "ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -43,6 +61,14 @@ namespace LogistAndDitribution.Core.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_OrderZoneUsers_UserId_CompanyId",
                 table: "OrderZoneUsers");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_OrderDetail",
+                table: "OrderDetail");
+
+            migrationBuilder.DropIndex(
+                name: "IX_OrderDetail_ZoneId_UnitId_PresentationId_ProductId_CompanyId",
+                table: "OrderDetail");
 
             migrationBuilder.AlterColumn<int>(
                 name: "UserId",
@@ -57,10 +83,21 @@ namespace LogistAndDitribution.Core.Migrations
                 table: "OrderZoneUsers",
                 columns: new[] { "OrderHeaderId", "ZoneId", "UserId", "CompanyId" });
 
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_OrderDetail",
+                table: "OrderDetail",
+                columns: new[] { "ZoneId", "OrderHeaderId", "UnitId", "PresentationId", "ProductId", "CompanyId" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_OrderZoneUsers_UserId_CompanyId",
                 table: "OrderZoneUsers",
                 columns: new[] { "UserId", "CompanyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetail_ZoneId_UnitId_PresentationId_ProductId_CompanyId",
+                table: "OrderDetail",
+                columns: new[] { "ZoneId", "UnitId", "PresentationId", "ProductId", "CompanyId" },
                 unique: true);
         }
     }

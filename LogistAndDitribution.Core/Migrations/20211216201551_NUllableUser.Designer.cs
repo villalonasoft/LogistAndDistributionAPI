@@ -4,14 +4,16 @@ using LogistAndDitribution.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LogistAndDitribution.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211216201551_NUllableUser")]
+    partial class NUllableUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +38,6 @@ namespace LogistAndDitribution.Core.Migrations
 
             modelBuilder.Entity("LogistAndDistribution.Models.Domain.Customer", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<int>("PersonTypeId")
                         .HasColumnType("int");
 
@@ -57,13 +56,11 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<string>("LargeName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "PersonTypeId", "PersonId", "CompanyId");
+                    b.HasKey("PersonTypeId", "PersonId", "CompanyId");
 
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PersonTypeId");
 
                     b.ToTable("Customers");
                 });
@@ -111,9 +108,6 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -149,7 +143,7 @@ namespace LogistAndDitribution.Core.Migrations
 
                     b.HasIndex("OrderTypeId");
 
-                    b.HasIndex("CustomerId", "PersonTypeId", "PersonId", "CompanyId");
+                    b.HasIndex("PersonTypeId", "PersonId", "CompanyId");
 
                     b.ToTable("OrderHeaders");
                 });
@@ -171,10 +165,10 @@ namespace LogistAndDitribution.Core.Migrations
 
             modelBuilder.Entity("LogistAndDistribution.Models.Domain.OrderZoneUser", b =>
                 {
-                    b.Property<int>("ZoneId")
+                    b.Property<int>("OrderHeaderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderHeaderId")
+                    b.Property<int>("ZoneId")
                         .HasColumnType("int");
 
                     b.Property<int>("CompanyId")
@@ -186,13 +180,16 @@ namespace LogistAndDitribution.Core.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("ZoneId", "OrderHeaderId", "CompanyId");
+                    b.HasKey("OrderHeaderId", "ZoneId", "CompanyId");
 
                     b.HasIndex("OrderHeaderId", "CompanyId");
 
-                    b.HasIndex("UserId", "CompanyId");
+                    b.HasIndex("UserId", "CompanyId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
-                    b.HasIndex("ZoneId", "CompanyId");
+                    b.HasIndex("ZoneId", "CompanyId")
+                        .IsUnique();
 
                     b.ToTable("OrderZoneUsers");
                 });
@@ -435,7 +432,7 @@ namespace LogistAndDitribution.Core.Migrations
 
                     b.HasOne("LogistAndDistribution.Models.Domain.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId", "PersonTypeId", "PersonId", "CompanyId")
+                        .HasForeignKey("PersonTypeId", "PersonId", "CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -449,13 +446,13 @@ namespace LogistAndDitribution.Core.Migrations
                         .IsRequired();
 
                     b.HasOne("LogistAndDistribution.Models.Domain.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId", "CompanyId")
+                        .WithOne()
+                        .HasForeignKey("LogistAndDistribution.Models.Domain.OrderZoneUser", "UserId", "CompanyId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("LogistAndDistribution.Models.Domain.Zone", "Zone")
-                        .WithMany()
-                        .HasForeignKey("ZoneId", "CompanyId")
+                        .WithOne()
+                        .HasForeignKey("LogistAndDistribution.Models.Domain.OrderZoneUser", "ZoneId", "CompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
