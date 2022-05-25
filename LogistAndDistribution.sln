@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Picking.Core", "CEDIS.Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stock.API", "ExistenciaMongoDb\Stock.API.csproj", "{DA2E5957-2B7F-48B5-AFA3-69C8B25D9BE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "upload", "upload\upload.csproj", "{C23F83CE-0D15-4B45-97E7-327716711B20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UploadStock", "upload\UploadStock.csproj", "{C23F83CE-0D15-4B45-97E7-327716711B20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
