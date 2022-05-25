@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CEDIS.Picking.API.Pgsql", "CEDIS.Picking.API.Pgsql\CEDIS.Picking.API.Pgsql.csproj", "{418696A3-A84A-4CDB-9CD0-AC62C144F0FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Picking.API", "CEDIS.Picking.API.Pgsql\Picking.API.csproj", "{418696A3-A84A-4CDB-9CD0-AC62C144F0FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CEDIS.Core.Pgsql", "CEDIS.Core.Pgsql\CEDIS.Core.Pgsql.csproj", "{5A2D1452-8140-48AF-BA32-3FB3ADBD532F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Picking.Core", "CEDIS.Core.Pgsql\Picking.Core.csproj", "{5A2D1452-8140-48AF-BA32-3FB3ADBD532F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExistenciaMongoDb", "ExistenciaMongoDb\ExistenciaMongoDb.csproj", "{DA2E5957-2B7F-48B5-AFA3-69C8B25D9BE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stock.API", "ExistenciaMongoDb\Stock.API.csproj", "{DA2E5957-2B7F-48B5-AFA3-69C8B25D9BE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "upload", "upload\upload.csproj", "{C23F83CE-0D15-4B45-97E7-327716711B20}"
 EndProject
