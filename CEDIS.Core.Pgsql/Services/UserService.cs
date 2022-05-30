@@ -4,6 +4,8 @@ using CEDIS.Core.Pgsql.DTOs;
 using CEDIS.Core.Pgsql.Persistences;
 using CEDIS.Core.Pgsql.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using OtpNet;
+using Picking.Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -87,7 +87,7 @@ namespace ExistenciaMongoDb.Controllers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     }),
                 (typeof(DataTable)));
-            
+
             using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 IWorkbook workbook = new XSSFWorkbook();
@@ -128,10 +128,17 @@ namespace ExistenciaMongoDb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(string branchId,string branchName, List<FullStock> postDtos)
+        public async Task<IActionResult> Post(string branchId, string branchName, List<FullStock> postDtos)
         {
-            await _mongoDbService.CreateAsync(branchId,branchName, postDtos);
-            return Ok();
+            try
+            {
+                await _mongoDbService.CreateAsync(branchId, branchName, postDtos);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     }
 }

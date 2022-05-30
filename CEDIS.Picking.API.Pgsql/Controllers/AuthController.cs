@@ -5,6 +5,7 @@ using CEDIS.Core.Pgsql.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Picking.Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -38,6 +39,11 @@ namespace CEDIS.Picking.API.Pgsql.Controllers
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
+            if(user.TwoFactorAuthenticator != null)
+            {
+                return Ok(new { twoFactorNeed=true });
+            }
+
             var claims = new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name,user.Id.ToString()),
@@ -51,6 +57,51 @@ namespace CEDIS.Picking.API.Pgsql.Controllers
 
             return Ok(authUser);
         }
+
+        [Authorize]
+        [HttpGet("qr")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public IActionResult GetQr()
+        {
+            return Ok(AuthService.GetSecretToQr());
+        }
+
+        [Authorize]
+        [HttpPost("qr")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> CreateQr(int userId,TwoFactorAuthenticator twoFactor,string code)
+        {
+            return Ok(await AuthService.User2FACreate(userId,twoFactor,code));
+        }
+
+        [AllowAnonymous]
+        [HttpPost("user/2fa")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Authenticate(string code, int userId)
+        {
+            if (await AuthService.User2FAValid(userId, code))
+                return BadRequest(new { message = "Codigo Incorrecto." });
+
+            var claims = new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(ClaimTypes.Name,userId.ToString()),
+                new Claim(CustomClaimsType.LogInType, UserLogInType.User.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            });
+
+            var token = JwtBuilder.Build(claims);
+
+            var authUser = new { result = userId, token = token.Token, type = UserLogInType.User.ToString() };
+
+            return Ok(authUser);
+        }
+
 
         [AllowAnonymous]
         [HttpPost("branch/authenticate")]

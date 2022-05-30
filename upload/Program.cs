@@ -75,7 +75,7 @@ namespace upload
                     (sender, certificate, chain, sslPolicyErrors) => true;
             var httpClient = new RestClient
             {
-                BaseUrl = new Uri($"http://192.168.10.48:5002/api/fullstock?branchId={branchid}&branchName={branchname}"),
+                BaseUrl = new Uri($"https://192.168.10.48:5002/api/fullstock?branchId={branchid}&branchName={branchname}"),
                 //BaseUrl = new Uri($@"https://localhost:44329/api/fullstock?branchId={branchid}&branchName={branchname}"),
             };
 
@@ -90,10 +90,8 @@ namespace upload
                 Console.WriteLine("PETICION ENVIADA: \n");
                 IRestResponse responseResult = httpClient.Execute(request);
 
-                //if (responseResult.StatusCode == System.Net.HttpStatusCode.OK)
-                //    return true;
                 if (responseResult.StatusCode != System.Net.HttpStatusCode.OK)
-                    throw new Exception(responseResult.ErrorMessage, responseResult.ErrorException);
+                    throw new Exception(responseResult.Content + " " + responseResult.StatusCode+" "+responseResult.ErrorMessage, responseResult.ErrorException);
             }
             catch (Exception ex)
             {

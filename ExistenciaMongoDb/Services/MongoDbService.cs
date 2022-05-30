@@ -119,7 +119,7 @@ namespace ExistenciaMongoDb.Services
             return;
         }
     }
-    class Listacodigo
+    internal class Listacodigo
     {
         public string Code { get; set; }
         public string Name { get; set; }
